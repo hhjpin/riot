@@ -14,7 +14,7 @@ Engine processes user requests, word segmentation, indexing and sorting are done
 	3. The indexer goroutine, responsible for creating and finding index tables
 	4. Ranker goroutine, responsible for ranking documents
     
-![](https://raw.github.com/go-ego/riot/master/docs/zh/gwk.png)
+![](https://raw.github.com/hhjpin/riot/master/docs/zh/gwk.png)
 
 **Indexing process**
 
@@ -32,7 +32,7 @@ Above is the general principle of riot engine. Any complete search system includ
 
 Document capture a lot of technology, more to come up alone to write an article. Fortunately microblogging crawling is relatively simple and can be done through the API provided by Sina, and there is a [Go Language SDK] (http://github.com/huichen/gobo) that can be crawled concurrently and at a fraction of the speed.
 
-I've already got about 100,000 tweets in testdata/weibo_data.txt (deleted because of the download speed of git clone, please click [here] (https://github.com/go-ego/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true), so you do not need to do it yourself. Each line in the document stores a microblogging, the format is as follows
+I've already got about 100,000 tweets in testdata/weibo_data.txt (deleted because of the download speed of git clone, please click [here] (https://github.com/hhjpin/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true), so you do not need to do it yourself. Each line in the document stores a microblogging, the format is as follows
 
     <微博id>||||<时间戳>||||<用户id>||||<用户名>||||<转贴数>||||<评论数>||||<喜欢数>||||<小图片网址>||||<大图片网址>||||<正文>
 
@@ -56,8 +56,8 @@ You need to import two packages using the riot engine
 
 ```go
 import (
-	"github.com/go-ego/riot"
-	"github.com/go-ego/riot/types"
+	"github.com/hhjpin/riot"
+	"github.com/hhjpin/riot/types"
 )
 ```
 The first package defines the engine function, the second package defines the common structure. Need to initialize before using engine, for example:

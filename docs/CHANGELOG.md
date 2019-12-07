@@ -46,7 +46,7 @@ Api basic transformation completed, it will be gradually stabilized after the co
 
     Add word segmentation rules docs
 
-    [Look at docs](https://github.com/go-ego/riot/tree/master/docs)
+    [Look at docs](https://github.com/hhjpin/riot/tree/master/docs)
 
     Store example
 
@@ -58,7 +58,7 @@ Api basic transformation completed, it will be gradually stabilized after the co
 
     Different dict and language search example
     
-    [Look at more Examples](https://github.com/go-ego/riot/tree/master/examples)
+    [Look at more Examples](https://github.com/hhjpin/riot/tree/master/examples)
 
 ### Update
 

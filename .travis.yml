@@ -1,6 +1,6 @@
 language: go
 
-go_import_path: github.com/go-ego/riot
+go_import_path: github.com/hhjpin/riot
 
 go:
   # - 1.7.x

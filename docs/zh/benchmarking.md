@@ -29,7 +29,7 @@ go tool pprof benchmark cpu.prof
 
 进入 pprof 终端后输入 web 命令可以生成类似下面的图，清晰地表示了每个组件消耗的 CPU 时间
 
-![](https://raw.github.com/go-ego/riot/master/docs/zh/cpu.png)
+![](https://raw.github.com/hhjpin/riot/master/docs/zh/cpu.png)
 
 分析内存占用：
 ```

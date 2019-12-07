@@ -28,7 +28,7 @@ go tool pprof benchmark cpu.prof
 ```
 
 Enter the pprof terminal after entering the web command can generate a similar figure below, clearly shows the CPU time consumed by each component:
-![](https://raw.github.com/go-ego/riot/master/docs/zh/cpu.png)
+![](https://raw.github.com/hhjpin/riot/master/docs/zh/cpu.png)
 
 Analyze memory usage：
 ```

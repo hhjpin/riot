@@ -3,7 +3,7 @@ docker 支持
 
 ## 从源代码 build docker 镜像
 
-1、请从[这里](https://github.com/go-ego/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true)下载 weibo_data.txt，放在 testdata/目录下; 可省略
+1、请从[这里](https://github.com/hhjpin/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true)下载 weibo_data.txt，放在 testdata/目录下; 可省略
 
 2、进入 examples/codelab 目录
 

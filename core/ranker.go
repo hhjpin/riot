@@ -20,8 +20,8 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/go-ego/riot/types"
-	"github.com/go-ego/riot/utils"
+	"github.com/hhjpin/riot/types"
+	"github.com/hhjpin/riot/utils"
 )
 
 // Ranker ranker

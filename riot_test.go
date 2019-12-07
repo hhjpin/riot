@@ -7,7 +7,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-ego/riot/types"
+	"github.com/hhjpin/riot/types"
 	"github.com/vcaesar/tt"
 )
 

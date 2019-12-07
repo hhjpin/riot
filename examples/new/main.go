@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-ego/riot"
-	"github.com/go-ego/riot/types"
+	"github.com/hhjpin/riot"
+	"github.com/hhjpin/riot/types"
 )
 
 var (

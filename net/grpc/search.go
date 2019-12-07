@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-ego/riot/net/com"
-	pb "github.com/go-ego/riot/net/grpc/riot-pb"
-	"github.com/go-ego/riot/types"
+	"github.com/hhjpin/riot/net/com"
+	pb "github.com/hhjpin/riot/net/grpc/riot-pb"
+	"github.com/hhjpin/riot/types"
 )
 
 var (

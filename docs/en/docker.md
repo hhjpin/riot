@@ -3,7 +3,7 @@ Docker support
 
 ## Build docker image from source
 
-1、Please download weibo_data.txt from [here](https://github.com/go-ego/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true) and place it in the testdata/directory, Can be omitted.
+1、Please download weibo_data.txt from [here](https://github.com/hhjpin/riot/blob/43f20b4c0921cc704cf41fe8653e66a3fcbb7e31/testdata/weibo_data.txt?raw=true) and place it in the testdata/directory, Can be omitted.
 
 2、Go to examples/codelab directory
 

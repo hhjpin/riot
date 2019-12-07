@@ -32,10 +32,10 @@ import (
 
 	"sync/atomic"
 
-	"github.com/go-ego/riot/core"
-	"github.com/go-ego/riot/store"
-	"github.com/go-ego/riot/types"
-	"github.com/go-ego/riot/utils"
+	"github.com/hhjpin/riot/core"
+	"github.com/hhjpin/riot/store"
+	"github.com/hhjpin/riot/types"
+	"github.com/hhjpin/riot/utils"
 
 	"github.com/go-ego/gse"
 	"github.com/go-ego/murmur"

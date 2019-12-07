@@ -18,13 +18,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-ego/riot/net/com"
-	rpc "github.com/go-ego/riot/net/grpc"
-	rhttp "github.com/go-ego/riot/net/http"
+	"github.com/hhjpin/riot/net/com"
+	rpc "github.com/hhjpin/riot/net/grpc"
+	rhttp "github.com/hhjpin/riot/net/http"
 
-	"github.com/go-ego/riot"
 	"github.com/go-vgo/gt/conf"
 	"github.com/go-vgo/gt/zlog"
+	"github.com/hhjpin/riot"
 )
 
 var (
