@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"reflect"
 	"runtime"
 	"sort"
 	"strconv"
@@ -37,6 +38,7 @@ import (
 	"github.com/hhjpin/riot/types"
 	"github.com/hhjpin/riot/utils"
 
+	"github.com/deckarep/golang-set"
 	"github.com/go-ego/gse"
 	"github.com/go-ego/murmur"
 	"github.com/shirou/gopsutil/mem"
@@ -714,6 +716,94 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 		}
 	}
 
+	// aggregate facet
+	facetSlice := make(map[string]*types.AttrPair)
+	for _, out := range rankOutput {
+		for k, v := range out.Attri {
+			if v.Indexed {
+				if tmpAttrPair, ok := facetSlice[k]; ok {
+					// attribute already exists
+					var existFlag int
+					if stringVal, ok := v.Value.(string); ok {
+						existFlag = 0
+						for _, val := range tmpAttrPair.Values {
+							if _, ok := val.Val.(string); ok && val.Val == stringVal {
+								val.RepeatTimes++
+								existFlag = 1
+							}
+						}
+						if existFlag == 0 {
+							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+								Val:         v.Value,
+								RepeatTimes: 1,
+							})
+						}
+					} else {
+						if sliceVal, ok := v.Value.([]string); ok {
+							existSet := mapset.NewSet()
+							sliceValSet := mapset.NewSet()
+							for _, val := range tmpAttrPair.Values {
+								if tmpVal, ok := val.Val.(string); ok {
+									for _, i := range sliceVal {
+										sliceValSet.Add(i)
+										if tmpVal == i {
+											val.RepeatTimes++
+											existSet.Add(i)
+										}
+									}
+								} else {
+									log.SetPrefix("[ERROR]")
+									log.Print("attribute value type not same")
+									continue
+								}
+							}
+							newSet := sliceValSet.Difference(existSet)
+							for _, i := range newSet.ToSlice() {
+								attr := &types.Attr{
+									Val:         i,
+									RepeatTimes: 1,
+								}
+								facetSlice[k].Values = append(facetSlice[k].Values, attr)
+							}
+						} else {
+							existFlag = 0
+							for _, val := range tmpAttrPair.Values {
+								if reflect.DeepEqual(val.Val, v.Value) {
+									val.RepeatTimes++
+									existFlag = 1
+								}
+							}
+							if existFlag == 0 {
+								tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+									Val:         v.Value,
+									RepeatTimes: 1,
+								})
+							}
+						}
+					}
+				} else {
+					tmpAttrPair := &types.AttrPair{
+						Key: k,
+					}
+					if sliceValue, ok := v.Value.([]string); ok {
+						for _, i := range sliceValue {
+							tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+								Val:         i,
+								RepeatTimes: 1,
+							})
+						}
+					} else {
+						tmpAttrPair.Values = append(tmpAttrPair.Values, &types.Attr{
+							Val:         v.Value,
+							RepeatTimes: 1,
+						})
+					}
+					facetSlice[k] = tmpAttrPair
+				}
+			}
+		}
+	}
+
 	// 准备输出
 	output.Tokens = tokens
 	// 仅当 CountDocsOnly 为 false 时才充填 output.Docs
@@ -729,6 +819,7 @@ func (engine *Engine) Ranks(request types.SearchReq, rankOpts types.RankOpts,
 		}
 	}
 
+	output.Facet = facetSlice
 	output.NumDocs = numDocs
 	output.Timeout = isTimeout
 
@@ -742,6 +833,7 @@ func (engine *Engine) SearchDoc(request types.SearchReq) (output types.SearchDoc
 	return types.SearchDoc{
 		BaseResp: resp.BaseResp,
 		Docs:     resp.Docs.(types.ScoredDocs),
+		Facet:    resp.Facet,
 	}
 }
 
@@ -791,6 +883,8 @@ func (engine *Engine) Search(request types.SearchReq) (output types.SearchResp) 
 		rankerReturnChan: rankerReturnChan,
 		orderless:        request.Orderless,
 		logic:            request.Logic,
+		filterOpt:        request.FilterOpt,
+		orderAtTheEnd:    request.OrderAtTheEnd,
 	}
 
 	// 向索引器发送查找请求

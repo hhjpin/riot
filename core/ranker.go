@@ -33,7 +33,7 @@ type Ranker struct {
 		docs   map[string]bool
 		// new
 		content map[string]string
-		attri   map[string]interface{}
+		attri   map[string]map[string]types.Attribute
 	}
 
 	idOnly      bool
@@ -57,7 +57,7 @@ func (ranker *Ranker) Init(onlyID ...bool) {
 	if !ranker.idOnly {
 		// new
 		ranker.lock.content = make(map[string]string)
-		ranker.lock.attri = make(map[string]interface{})
+		ranker.lock.attri = make(map[string]map[string]types.Attribute)
 	}
 }
 
@@ -81,7 +81,9 @@ func (ranker *Ranker) AddDoc(
 		}
 
 		if len(content) > 1 {
-			ranker.lock.attri[docId] = content[1]
+			if c, ok := content[1].(map[string]types.Attribute); ok {
+				ranker.lock.attri[docId] = c
+			}
 			// ranker.lock.attri[docId] = attri
 		}
 	}
@@ -177,8 +179,9 @@ func (ranker *Ranker) RankDocID(docs []types.IndexedDoc,
 }
 
 func (ranker *Ranker) rankOutDocs(docs []types.IndexedDoc, options types.RankOpts,
-	countDocsOnly bool) (outputDocs types.ScoredDocs, numDocs int) {
+	countDocsOnly bool, filterOpt []types.FilterOptions) (outputDocs types.ScoredDocs, numDocs int) {
 	for _, d := range docs {
+		var overFlag int
 		ranker.lock.RLock()
 		// 判断 doc 是否存在
 		if _, ok := ranker.lock.docs[d.DocId]; ok {
@@ -192,21 +195,49 @@ func (ranker *Ranker) rankOutDocs(docs []types.IndexedDoc, options types.RankOpt
 			scores := options.ScoringCriteria.Score(d, fs)
 			if len(scores) > 0 {
 				if !countDocsOnly {
-					scoredID := types.ScoredID{
-						DocId:            d.DocId,
-						Scores:           scores,
-						TokenSnippetLocs: d.TokenSnippetLocs,
-						TokenLocs:        d.TokenLocs,
+					if filterOpt != nil {
+						// 尝试过滤不符合要求的记录
+						for _, f := range filterOpt {
+							if ori, ok := attri[f.Attr]; ok {
+								if r, err := f.Val.Compare(ori.Value, f.Op); err == nil {
+									if r == true {
+										//满足条件, 放行
+									} else {
+										// 不满足条件, 跳过
+										overFlag = 1
+										break
+									}
+								} else {
+									// compare failed
+									log.SetPrefix("[ERROR]")
+									log.Print(err)
+								}
+							} else {
+								// 找不到对应的attr
+								log.SetPrefix("[WARNING]")
+								log.Printf("在Attri结构体中无法找到该属性: %s", f.Attr)
+							}
+						}
 					}
+					if overFlag == 1 {
+						continue
+					} else {
+						scoredID := types.ScoredID{
+							DocId:            d.DocId,
+							Scores:           scores,
+							TokenSnippetLocs: d.TokenSnippetLocs,
+							TokenLocs:        d.TokenLocs,
+						}
 
-					outputDocs = append(outputDocs,
-						types.ScoredDoc{
-							ScoredID: scoredID,
-							// new
-							Fields:  fs,
-							Content: content,
-							Attri:   attri,
-						})
+						outputDocs = append(outputDocs,
+							types.ScoredDoc{
+								ScoredID: scoredID,
+								// new
+								Fields:  fs,
+								Content: content,
+								Attri:   attri,
+							})
+					}
 				}
 				numDocs++
 			}
@@ -220,12 +251,12 @@ func (ranker *Ranker) rankOutDocs(docs []types.IndexedDoc, options types.RankOpt
 
 // RankDocs rank docs by types.ScoredDocs
 func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool) (types.ScoredDocs, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions, orderAtTheEnd bool) (types.ScoredDocs, int) {
 
-	outputDocs, numDocs := ranker.rankOutDocs(docs, options, countDocsOnly)
+	outputDocs, numDocs := ranker.rankOutDocs(docs, options, countDocsOnly, filterOpt)
 
 	// 排序
-	if !countDocsOnly {
+	if !countDocsOnly && !orderAtTheEnd {
 		if options.ReverseOrder {
 			sort.Sort(sort.Reverse(outputDocs))
 		} else {
@@ -244,7 +275,7 @@ func (ranker *Ranker) RankDocs(docs []types.IndexedDoc,
 // Rank rank docs
 // 给文档评分并排序
 func (ranker *Ranker) Rank(docs []types.IndexedDoc,
-	options types.RankOpts, countDocsOnly bool) (interface{}, int) {
+	options types.RankOpts, countDocsOnly bool, filterOpt []types.FilterOptions, orderAtTheEnd bool) (interface{}, int) {
 
 	if ranker.initialized == false {
 		log.Fatal("The Ranker has not been initialized.")
@@ -256,6 +287,6 @@ func (ranker *Ranker) Rank(docs []types.IndexedDoc,
 		return outputDocs, numDocs
 	}
 
-	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly)
+	outputDocs, numDocs := ranker.RankDocs(docs, options, countDocsOnly, filterOpt, orderAtTheEnd)
 	return outputDocs, numDocs
 }

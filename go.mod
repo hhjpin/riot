@@ -3,6 +3,7 @@ module github.com/hhjpin/riot
 require (
 	github.com/coreos/bbolt v1.3.3 // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
+	github.com/deckarep/golang-set v1.7.1
 	github.com/dgraph-io/badger v1.6.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-ego/gpy v0.0.0-20181128170341-b6d42325845c

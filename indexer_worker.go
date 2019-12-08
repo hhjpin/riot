@@ -36,6 +36,8 @@ type indexerLookupReq struct {
 	rankerReturnChan chan rankerReturnReq
 	orderless        bool
 	logic            types.Logic
+	filterOpt        []types.FilterOptions
+	orderAtTheEnd    bool
 }
 
 type indexerRemoveDocReq struct {
@@ -141,7 +143,9 @@ func (engine *Engine) indexerLookup(shard int) {
 			countDocsOnly:    request.countDocsOnly,
 			docs:             docs,
 			options:          request.options,
+			filterOpt:        request.filterOpt,
 			rankerReturnChan: request.rankerReturnChan,
+			orderAtTheEnd:    request.orderAtTheEnd,
 		}
 		engine.rankerRankChans[shard] <- rankerRequest
 	}
